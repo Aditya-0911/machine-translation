@@ -2,11 +2,11 @@
 # Model Architecture
 # ================================
 
-embedding_dim = 128
+embedding_dim = 256
 
 hidden_dim = 256
 
-num_layers = 1
+num_layers = 2
 
 dropout = 0.1
 
