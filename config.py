@@ -28,7 +28,7 @@ batch_size = 64
 
 learning_rate = 3e-4
 
-num_epochs = 3
+num_epochs = 5
 
 
 # ================================
