@@ -29,7 +29,7 @@ class Decoder(nn.Module):
         attn_weights = attn_weights.unsqueeze(1)
         context = torch.bmm(attn_weights, encoder_outputs)
         lstm_input = torch.cat((embedded, context), dim=2)
-        output, (hidden, cell) = self.lstm(lstm_input, (hidden, cell))
+        output, (hidden, cell) = self.lstm(lstm_input, (hidden.contiguous(), cell.contiguous()))
         output = output.squeeze(1)
 
         output = output.squeeze(1)

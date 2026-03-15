@@ -18,13 +18,21 @@ class Encoder(nn.Module):
             bidirectional=True
         )
 
-    def forward(self,src):
-        
+    def forward(self, src):
+    
         embedded = self.embedding(src)
+        outputs, (hidden, cell) = self.lstm(embedded)
 
-        outputs,(hidden,cell) = self.lstm(embedded)
+        # hidden shape: [num_layers*2, batch, hidden_dim]
+        # Merge forward and backward by summing pairs
+        # Result shape: [num_layers, batch, hidden_dim]
+        hidden = hidden.view(num_layers, 2, -1, hidden_dim)
+        hidden = (hidden[:, 0, :, :] + hidden[:, 1, :, :])  # sum forward + backward
 
-        return outputs,hidden,cell
+        cell = cell.view(num_layers, 2, -1, hidden_dim)
+        cell = (cell[:, 0, :, :] + cell[:, 1, :, :])
+
+        return outputs, hidden, cell
 
 
 
