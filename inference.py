@@ -6,19 +6,20 @@ from src.models.encoder import Encoder
 from src.models.decoder import Decoder
 from src.models.seq2seq import Seq2Seq
 
-from config import sos_idx, eos_idx
-
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
-def translate(sentence, model, src_tokenizer, tgt_tokenizer, max_len=20):
+def translate(sentence, model, src_tokenizer, tgt_tokenizer, max_len=50):
 
     model.eval()
 
     tokens = src_tokenizer.encode(sentence)
-
     src_tensor = torch.tensor(tokens).unsqueeze(0).to(device)
+
+    sos_idx = tgt_tokenizer.word2idx['<SOS>']
+    eos_idx = tgt_tokenizer.word2idx['<EOS>']
+    unk_idx = tgt_tokenizer.word2idx['<UNK>']
 
     with torch.no_grad():
 
@@ -42,11 +43,18 @@ def translate(sentence, model, src_tokenizer, tgt_tokenizer, max_len=20):
             if top1.item() == eos_idx:
                 break
 
-            outputs.append(top1.item())
+            # ✅ skip UNK tokens
+            if top1.item() != unk_idx:
+                outputs.append(top1.item())
 
             input_token = top1
 
-    return tgt_tokenizer.decode(outputs)
+    # ✅ filter out any special tokens just in case
+    special_tokens = {'<SOS>', '<EOS>', '<UNK>', '<PAD>'}
+    words = [tgt_tokenizer.idx2word[i] for i in outputs]
+    words = [w for w in words if w not in special_tokens]
+
+    return " ".join(words)
 
 
 if __name__ == "__main__":
