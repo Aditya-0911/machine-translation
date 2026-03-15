@@ -23,14 +23,6 @@ class Seq2Seq(nn.Module):
 
         encoder_outputs, hidden, cell = self.encoder(src)
 
-        # Combine bidirectional hidden states
-        hidden = torch.cat((hidden[0:hidden.size(0):2], hidden[1:hidden.size(0):2]), dim=2)
-        cell = torch.cat((cell[0:cell.size(0):2], cell[1:cell.size(0):2]), dim=2)
-
-        # Reduce back to hidden_dim
-        hidden = hidden[:, :, :self.decoder.lstm.hidden_size]
-        cell = cell[:, :, :self.decoder.lstm.hidden_size]
-
         input_token = tgt[:,0]
 
         for t in range(1, tgt_len):
