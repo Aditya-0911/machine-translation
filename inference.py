@@ -23,9 +23,6 @@ def translate(sentence, model, src_tokenizer, tgt_tokenizer, max_len=20):
     with torch.no_grad():
 
         encoder_outputs, hidden, cell = model.encoder(src_tensor)
-        # combine bidirectional encoder states
-        hidden = hidden[0:hidden.size(0):2] + hidden[1:hidden.size(0):2]
-        cell = cell[0:cell.size(0):2] + cell[1:cell.size(0):2]
 
         input_token = torch.tensor([sos_idx]).to(device)
 
